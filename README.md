@@ -16,16 +16,13 @@ The folder structure is intentional:
 nf-plasmidsaurus-plasmid/
 ├── assets/
 │   └── Directory for other project files
-├── bin/
-│   └── Directory for scripts that will be added to $PATH
-├── conf/
-│   └── Directory for additional config files
 ├── modules/
 │   └── Directory for Nextflow DSL2 modules
 ├── workflows/
 │   └── Directory for Nextflow DSL2 subworkflows 
 ├── main.nf - The main Nextflow script file
 ├── nextflow.config - The main configuration file
+├── modules.json - allows nf-core to keep track of nf-core installed dependencies
 └── README.md
 ```
 ### main.nf
