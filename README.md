@@ -16,8 +16,10 @@ As a note, Docker containers used in the modules are made to be used on `linux/a
 ## Execution
 If you already have Docker and Nextflow installed on your Mac system, you can execute the pipeline with a command like this one:
 ```
-nextflow run main.nf --input_dir ~/Desktop/nf-plasmidsaurus-plasmid/assets/test-data-plasmid/ --output_dir ~/Desktop/nf-plasmidsaurus-plasmid/work_output/ --sample_id test_plasmids --genome_size 7200 -profile docker
+nextflow run main.nf --input_dir ~/Desktop/nf-plasmidsaurus-plasmid/assets/test-data-plasmid/ --output_dir ~/Desktop/plasmid_output/ --sample_id sample_id --genome_size 7200 -profile docker
 ```
+Test files are present in the directories already and this should run out of the box. 
+
 These are all required input parameters for the pipeline to run, except for the Docker profile. `--genome_size` would be replaced with your estimated genome size.
 
 Docker and Nextflow installation how-tos can be found in `documentation/`
