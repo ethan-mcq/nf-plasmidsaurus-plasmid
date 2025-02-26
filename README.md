@@ -58,6 +58,8 @@ The base `nextflow.config` file is for declaring global variables that will be u
 ### bin/ conf/ assets/    
 Please refer to directory descriptions and files located in those directories for what belongs there. 
 
+The `deconcat.py` script was taken and edited by myself to be more streamlined from the `wf-clonal-variation` Epi2Me pipeline. 
+
 ### assets/
 `assets/` stores any reference [Dockerfiles](https://docs.docker.com/reference/dockerfile/), test files, reference genomes, and other files necessary for workflow execution.
 

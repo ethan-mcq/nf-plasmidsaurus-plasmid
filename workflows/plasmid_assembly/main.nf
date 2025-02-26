@@ -3,7 +3,7 @@ include { SEQKIT_SUBSEQ } from '../../modules/local/seqkit/subseq/main'
 include { RASUSA } from '../../modules/nf-core/rasusa/main'
 include { TRYCYCLER_SUBSAMPLE } from '../../modules/local/trycycler/subsample/main'
 include { FLYE } from '../../modules/local/flye/main'
-include { MEDAKA } from '../../modules/nf-core/medaka/main'
+include { MEDAKA } from '../../modules/local/medaka/main'
 //plannotate
 include { LAST_DOTPLOT } from '../../modules/nf-core/last/dotplot/main'
 //other stuff here
@@ -12,7 +12,6 @@ include { TAR } from '../../modules/nf-core/tar/main'
 // Import subworkflows
 include { ECOLI_FILTER } from '../../subworkflows/ecoli_filter'
 include { TRYCYCLER_COMPLETE } from '../../subworkflows/trycycler_complete'
-include { TRYCYCLER_CLUSTER } from '../../modules/local/trycycler/cluster/main.nf'
 
 ////////////////////////////////////////////////////
 /* --           RUN MAIN WORKFLOW              -- */
@@ -73,10 +72,11 @@ workflow PLASMID_ASSEMBLY_WORKFLOW {
             [meta, fastas]
         }
 
-    // trycycler reconcile 
+    // Trycycler assembly completion 
     TRYCYCLER_COMPLETE(flye_assemblies, RASUSA.out.reads)
 
-    // medaka polish
+    // Medaka polish
+    MEDAKA(TRYCYCLER_COMPLETE.out.fastq, TRYCYCLER_COMPLETE.out.assembly)
 
     // plannotate
     // last dotplot

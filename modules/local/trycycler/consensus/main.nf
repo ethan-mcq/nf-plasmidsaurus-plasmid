@@ -9,6 +9,7 @@ process TRYCYCLER_CONSENSUS {
     tuple val(meta), path(cluster_dir)
 
     output:
+    tuple val(meta), path("${cluster_dir}/4_reads.fastq") , emit: consensus_fastq
     tuple val(meta), path("${cluster_dir}/7_final_consensus.fasta") , emit: consensus_fasta
     path "versions.yml"                   , emit: versions
 

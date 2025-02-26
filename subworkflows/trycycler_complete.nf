@@ -23,5 +23,6 @@ workflow TRYCYCLER_COMPLETE {
     TRYCYCLER_CONSENSUS(TRYCYCLER_PARTITION.out.cluster_dir)
 
     emit:
-    TRYCYCLER_CONSENSUS.out.consensus_fasta
+    fastq = TRYCYCLER_CONSENSUS.out.consensus_fastq
+    assembly = TRYCYCLER_CONSENSUS.out.consensus_fasta
 }
