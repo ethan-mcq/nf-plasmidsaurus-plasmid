@@ -1,0 +1,56 @@
+name: plannotate_batch
+description: Annotates engineered DNA sequences, primarily plasmids
+keywords:
+  - plannotate
+  - annotation
+  - plasmid
+  - fasta
+  - genbank
+tools:
+  - plannotate:
+      description: Annotates engineered DNA sequences, primarily plasmids
+      homepage: https://github.com/mmwaskom/plannotate
+      documentation: https://github.com/mmwaskom/plannotate#readme
+      tool_dev_url: https://github.com/mmwaskom/plannotate
+      doi: ""
+      licence: ["MIT"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - fasta:
+      type: file
+      description: Input FASTA file
+      pattern: "*.{fa,fasta}"
+  - linear:
+      type: boolean
+      description: Whether to enable linear DNA annotation
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - gbk:
+      type: file
+      description: Output GenBank file
+      pattern: "*.gbk"
+  - html:
+      type: file
+      description: Output HTML plasmid map
+      pattern: "*.html"
+  - csv:
+      type: file
+      description: Output CSV file (optional)
+      pattern: "*.csv"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@ethan-mcq"

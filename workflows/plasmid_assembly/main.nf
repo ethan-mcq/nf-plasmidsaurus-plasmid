@@ -4,7 +4,7 @@ include { RASUSA } from '../../modules/nf-core/rasusa/main'
 include { TRYCYCLER_SUBSAMPLE } from '../../modules/local/trycycler/subsample/main'
 include { FLYE } from '../../modules/local/flye/main'
 include { MEDAKA } from '../../modules/local/medaka/main'
-//plannotate
+include { PLANNOTATE_BATCH } from '../../modules/local/plannotate/batch/main'
 include { LAST_DOTPLOT } from '../../modules/nf-core/last/dotplot/main'
 //other stuff here
 include { TAR } from '../../modules/nf-core/tar/main'
@@ -78,7 +78,9 @@ workflow PLASMID_ASSEMBLY_WORKFLOW {
     // Medaka polish
     MEDAKA(TRYCYCLER_COMPLETE.out.fastq, TRYCYCLER_COMPLETE.out.assembly)
 
-    // plannotate
+    // plAnnotate
+    PLANNOTATE_BATCH(MEDAKA.out.assembly, false)
+    
     // last dotplot
     // read length histogram
     // per base reference data tsv (samtools depth to reference?)
