@@ -4,10 +4,35 @@ I appreciate Rishud Handa and his team at Plasmidsaurus for looking at my work. 
 
 This pipeline employs [Nextflow](https://www.nextflow.io/) and is able to depoly on [Seqera](https://seqera.io/) to create a scalable, elastic, and reproducable production bioinformatics pipeline. 
 
-Refer to the documentation below for all style guides, Git versioning, and included subworkflows. 
+Refer to the documentation below for all more info and how to use!
+
+As a note, Docker containers used in the modules are made to be used on `linux/arm64 ` devices (Mac Metal). In the interest of time, and to showcase a foundational level of skills, I opted to build it this way. If you wanted to run this on a `linux/amd64` machine, you would simply need to rebuild the containers located in the `assets/docker/*` directory. 
 
 ## Table of Contents
+- [Execution](#Execution)
+- [Outputs](#Outputs)
 - [Overview of the Pipeline](#overview-of-the-pipeline)
+
+## Execution
+If you already have Docker and Nextflow installed on your Mac system, you can execute the pipeline with a command like this one:
+```
+nextflow run main.nf --input_dir ~/Desktop/nf-plasmidsaurus-plasmid/assets/test-data-plasmid/ --output_dir ~/Desktop/nf-plasmidsaurus-plasmid/work_output/ --sample_id test_plasmids --genome_size 7200 -profile docker
+```
+These are all required input parameters for the pipeline to run, except for the Docker profile. `--genome_size` would be replaced with your estimated genome size.
+
+**CAVEAT:** Again, in the interest of time, I have not built in error catching for `FLYE` or `TRYCYCLER RECONCILE`. If the command exits with the test data, simply rerun the code as it is likely an error from contig creation by Trycycler. <3
+
+## Outputs
+The output of the pipeline will be a tar.gz file with all of the contents from the pipeline.
+```
+sample_id/
+├── sample_id.fa - Provides consensus sequence of the plasmid.
+├── sample_id_pLann.gbk - Provides consensus sequence of the plasmid in gbk format.
+├── sample_id_pLann.html - An interactive version of the pLannotate plasmid map.
+├── sample_id.merged.fastq.gz - Sequence file of all raw reads.
+├── sample_id.read_coverage.png - Consensus sequence plasmid coverage from sequence file.
+├── sample_id.read_length.png - Shows read length and counts of unaligned, plasmid aligned, and contaminant aligned reads. 
+```
 
 ## Overview of the Pipeline
 The folder structure is intentional:
@@ -33,7 +58,7 @@ nextflow.enable.dsl = 2
 
 `main.nf` is made to handle an incoming execution request like this one:
 ```
-nextflow run ~/Desktop/nf-plasmidsaurus-plasmid/main.nf --input_dir ~/Desktop/nf-plasmidsaurus-plasmid/test/ --batch_id 250103-H
+nextflow run main.nf --input_dir ~/Desktop/nf-plasmidsaurus-plasmid/assets/test-data-plasmid/ --output_dir ~/Desktop/nf-plasmidsaurus-plasmid/work_output/ --sample_id test_plasmids --genome_size 7200
 ```
 
 ### nextflow.config
@@ -63,7 +88,7 @@ The `deconcat.py` script was taken and edited by myself to be more streamlined f
 ### assets/
 `assets/` stores any reference [Dockerfiles](https://docs.docker.com/reference/dockerfile/), test files, reference genomes, and other files necessary for workflow execution.
 
-Additionally, all test data used to produce this pipeline was accessed from the [Nanopore London Calling 2024 datasets repository](https://labs.epi2me.io/lc2024-datasets/) and downloaded from `s3://ont-open-data/londoncalling2024/rbk-plasmid`
+Additionally, all test data used to produce this pipeline was accessed from the [Nanopore London Calling 2024 datasets repository](https://labs.epi2me.io/lc2024-datasets/) and downloaded from `s3://ont-open-data/londoncalling2024/rbk-plasmid/inputs/`
 
 ### modules/ 
 Modules are reusable, standardized building blocks for Nextflow pipelines. They are designed to simplify workflow development by providing pre-built, community-maintained processes for common bioinformatics tasks.
@@ -78,8 +103,8 @@ Key Features of [nf-core Modules](https://nf-co.re/modules/)
     Container Support – Comes with predefined Docker, Singularity, and Conda environments.
     Customization – Parameters can be modified to fit different workflows.
 
-### workflows/ 
-`workflows/` hosts subworkflows, which are reusable, modular components that groups multiple processes (`modules/`) together within a pipeline. It helps in organizing complex workflows by encapsulating a sequence of steps into a single unit, making the pipeline more manageable, reusable, and scalable.
+### workflows/ and subworkflows/ 
+`workflows/` and `subworkflows/` hosts workflows and subworkflows respectively, which are reusable, modular components that groups multiple processes (`modules/`) together within a pipeline. It helps in organizing complex workflows by encapsulating a sequence of steps into a single unit, making the pipeline more manageable, reusable, and scalable.
 
 Key Characteristics of a Subworkflow:
 
@@ -88,6 +113,6 @@ Key Characteristics of a Subworkflow:
     Modularity – Helps keep workflows clean and structured.
     Improved Maintainability – Changes to a subworkflow update all pipelines that use it.
 
-**MAIN POINT:** Do not perform analysis within the main workflow scripts. If analysis or calling of outside packages is necessary and there is not already a pre-built module, make one. 
+**MAIN POINT:** Do not perform analysis within the main workflow scripts. If analysis or calling of outside package or scripts is necessary and there is not already a pre-built module, make one. 
 
 ---
