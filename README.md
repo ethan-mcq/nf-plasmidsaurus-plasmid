@@ -20,6 +20,8 @@ nextflow run main.nf --input_dir ~/Desktop/nf-plasmidsaurus-plasmid/assets/test-
 ```
 These are all required input parameters for the pipeline to run, except for the Docker profile. `--genome_size` would be replaced with your estimated genome size.
 
+Docker and Nextflow installation how-tos can be found in `documentation/`
+
 **CAVEAT:** Again, in the interest of time, I have not built in error catching for `FLYE` or `TRYCYCLER RECONCILE`. If the command exits with the test data, simply rerun the code as it is likely an error from contig creation by Trycycler. <3
 
 ## Outputs
