@@ -61,6 +61,8 @@ Please refer to directory descriptions and files located in those directories fo
 ### assets/
 `assets/` stores any reference [Dockerfiles](https://docs.docker.com/reference/dockerfile/), test files, reference genomes, and other files necessary for workflow execution.
 
+Additionally, all test data used to produce this pipeline was accessed from the [Nanopore London Calling 2024 datasets repository](https://labs.epi2me.io/lc2024-datasets/) and downloaded from `s3://ont-open-data/londoncalling2024/rbk-plasmid`
+
 ### modules/ 
 Modules are reusable, standardized building blocks for Nextflow pipelines. They are designed to simplify workflow development by providing pre-built, community-maintained processes for common bioinformatics tasks.
 
