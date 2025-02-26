@@ -26,8 +26,6 @@ nf-plasmidsaurus-plasmid/
 └── README.md
 ```
 ### main.nf
-**Important topic:** I did not add in deconcatenation in this workflow in the interest of time. 
-
 The entire pipeline is [DSL2](https://seqera.io/blog/dsl2-is-here/) optimized:
 ```
 nextflow.enable.dsl = 2

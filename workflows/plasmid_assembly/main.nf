@@ -11,6 +11,8 @@ include { TAR } from '../../modules/nf-core/tar/main'
 
 // Import subworkflows
 include { ECOLI_FILTER } from '../../subworkflows/ecoli_filter'
+include { TRYCYCLER_COMPLETE } from '../../subworkflows/trycycler_complete'
+include { TRYCYCLER_CLUSTER } from '../../modules/local/trycycler/cluster/main.nf'
 
 ////////////////////////////////////////////////////
 /* --           RUN MAIN WORKFLOW              -- */
@@ -41,17 +43,17 @@ workflow PLASMID_ASSEMBLY_WORKFLOW {
     // Trim read ends by 100
     SEQKIT_SUBSEQ(ECOLI_FILTER.out.filtered_reads)
     
-    // Subsample with rasusa
+    // Downsample with rasusa
     rasusa_input = SEQKIT_SUBSEQ.out.fastx.map { meta, reads ->
         [meta, reads, params.genome_size]
     }
 
     RASUSA(rasusa_input, params.downsample_target_depth)
 
-    // trycycler subsample
+    // Trycycler subsample
     TRYCYCLER_SUBSAMPLE(RASUSA.out.reads, params.genome_size)
 
-    // flye assembly
+    // Assemble subsamples with Flye
     // Prepare input for FLYE
     flye_input = TRYCYCLER_SUBSAMPLE.out.subreads
         .transpose()
@@ -59,10 +61,23 @@ workflow PLASMID_ASSEMBLY_WORKFLOW {
             def new_meta = meta + [id: "${meta.id}_${reads.baseName}"]
             [new_meta, reads]
         }
-        
+
     FLYE(flye_input, params.read_quality)
 
-    // trycycler and medaka polish
+    // After FLYE process
+    flye_assemblies = FLYE.out.fasta
+        .map { meta, fasta -> fasta }
+        .collect()
+        .map { fastas -> 
+            def meta = [id: params.sample_id]
+            [meta, fastas]
+        }
+
+    // trycycler reconcile 
+    TRYCYCLER_COMPLETE(flye_assemblies, RASUSA.out.reads)
+
+    // medaka polish
+
     // plannotate
     // last dotplot
     // read length histogram

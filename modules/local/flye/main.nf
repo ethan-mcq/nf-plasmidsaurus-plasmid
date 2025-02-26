@@ -10,7 +10,7 @@ process FLYE {
     val mode
 
     output:
-    tuple val(meta), path("*.fasta.gz"), emit: fasta
+    tuple val(meta), path("*.assembly.fasta"), emit: fasta
     tuple val(meta), path("*.gfa.gz")  , emit: gfa
     tuple val(meta), path("*.gv.gz")   , emit: gv
     tuple val(meta), path("*.txt")     , emit: txt
@@ -41,23 +41,7 @@ process FLYE {
     mv assembly_info.txt ${prefix}.assembly_info.txt
     mv flye.log ${prefix}.flye.log
     mv params.json ${prefix}.params.json
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        flye: \$( flye --version )
-    END_VERSIONS
-    """
-
-    stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    """
-    echo stub | gzip -c > ${prefix}.assembly.fasta.gz
-    echo stub | gzip -c > ${prefix}.assembly_graph.gfa.gz
-    echo stub | gzip -c > ${prefix}.assembly_graph.gv.gz
-    echo contig_1 > ${prefix}.assembly_info.txt
-    echo stub > ${prefix}.flye.log
-    echo stub > ${prefix}.params.json
-
+    mv assembly.fasta ${prefix}.assembly.fasta
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         flye: \$( flye --version )

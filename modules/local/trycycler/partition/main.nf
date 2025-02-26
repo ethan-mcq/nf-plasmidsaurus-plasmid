@@ -1,4 +1,4 @@
-process TRYCYCLER_SUBSAMPLE {
+process TRYCYCLER_PARTITION {
     tag "$meta.id"
     label 'process_medium'
 
@@ -7,10 +7,10 @@ process TRYCYCLER_SUBSAMPLE {
 
     input:
     tuple val(meta), path(reads)
-    val(genome_size)
+    tuple val(meta2), path(cluster_dir)
 
     output:
-    tuple val(meta), path("*/*.fastq.gz") , emit: subreads
+    tuple val(meta), path(cluster_dir) , emit: cluster_dir
     path "versions.yml"                   , emit: versions
 
     when:
@@ -23,15 +23,10 @@ process TRYCYCLER_SUBSAMPLE {
 
     """
     trycycler \\
-        subsample \\
+        partition \\
         $args \\
-        --count 3 \\
         --reads ${reads} \\
-        --threads $task.cpus \\
-        --out_dir ${prefix} \\
-        --genome_size ${genome_size}
-
-    gzip $args2 ${prefix}/*.fastq
+        --cluster_dir $cluster_dir \\
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
