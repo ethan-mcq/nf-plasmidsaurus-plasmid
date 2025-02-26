@@ -5,13 +5,17 @@ include { TRYCYCLER_SUBSAMPLE } from '../../modules/local/trycycler/subsample/ma
 include { FLYE } from '../../modules/local/flye/main'
 include { MEDAKA } from '../../modules/local/medaka/main'
 include { PLANNOTATE_BATCH } from '../../modules/local/plannotate/batch/main'
+include { MINIMAP2_ALIGN } from '../../modules/nf-core/minimap2/align/main.nf'
+include { PLOT_HISTOGRAM } from '../../modules/local/toolbox/plot_histogram/main.nf'
+include { PLOT_COVERAGE } from '../../modules/local/toolbox/plot_coverage/main.nf'
+
 //other stuff here
 include { TAR } from '../../modules/nf-core/tar/main'
 
 // Import subworkflows
 include { ECOLI_FILTER } from '../../subworkflows/ecoli_filter'
 include { TRYCYCLER_COMPLETE } from '../../subworkflows/trycycler_complete'
-include { RL_HISTOGRAM } from '../../subworkflows/rl_histogram'
+
 
 ////////////////////////////////////////////////////
 /* --           RUN MAIN WORKFLOW              -- */
@@ -81,9 +85,14 @@ workflow PLASMID_ASSEMBLY_WORKFLOW {
     // plAnnotate
     PLANNOTATE_BATCH(MEDAKA.out.assembly, false)
     
-    // Read length histogram
-    RL_HISTOGRAM(MEDAKA.out.assembly, ECOLI_FILTER.out.filtered_reads, ECOLI_FILTER.out.ecoli_reads)
-    
+    // Read length histograms
+    // Align reads to assembly
+    MINIMAP2_ALIGN(ECOLI_FILTER.out.filtered_reads, MEDAKA.out.assembly, true, 'bai', false, false)
+
+    PLOT_HISTOGRAM(ECOLI_FILTER.out.ecoli_reads, MINIMAP2_ALIGN.out.bam)
+
+    PLOT_COVERAGE(MINIMAP2_ALIGN.out.bam, MEDAKA.out.assembly)
+
     // per base reference data tsv (samtools depth to reference?)
     // coverage plot -> per base reference out with visualization script
     // e coli contamination -> subworkflow with samtools view and python script

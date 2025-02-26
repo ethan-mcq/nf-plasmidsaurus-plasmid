@@ -1,13 +1,13 @@
-process PLOT_HISTOGRAM {
+process PLOT_COVERAGE {
     tag "$meta.id"
     label 'process_low'
 
     conda "${moduleDir}/environment.yml"
-    container "ethanmcq/plot_histogram"
+    container "ethanmcq/plot_coverage"
 
     input:
-    tuple val(meta), path(ecoli_bam)
-    tuple val(meta2), path(assembly_bam)
+    tuple val(meta), path(assembly_bam)
+    tuple val(meta2), path(assembly)
 
     output:
     tuple val(meta), path("*.png"), emit: histogram
@@ -18,17 +18,17 @@ process PLOT_HISTOGRAM {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}.read_length"
+    def prefix = task.ext.prefix ?: "${meta.id}.read_coverage"
     """
-    python3 /data/histogram.py \\
-        $ecoli_bam \\
+    python3 /data/coverage.py \\
         $assembly_bam \\
+        $assembly \\
         $prefix \\
         $args
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        histogram: \$(python3 /data/histogram.py --version 2>&1 | sed 's/^.*version //; s/Using.*\$//')
+        coverage: \$(python3 /data/coverage.py --version 2>&1 | sed 's/^.*version //; s/Using.*\$//')
     END_VERSIONS
     """
 }
