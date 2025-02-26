@@ -10,7 +10,7 @@ include { PLOT_HISTOGRAM } from '../../modules/local/toolbox/plot_histogram/main
 include { PLOT_COVERAGE } from '../../modules/local/toolbox/plot_coverage/main.nf'
 
 //other stuff here
-include { TAR } from '../../modules/nf-core/tar/main'
+include { ZIP } from '../../modules/nf-core/zip/main'
 
 // Import subworkflows
 include { ECOLI_FILTER } from '../../subworkflows/ecoli_filter'
@@ -85,7 +85,7 @@ workflow PLASMID_ASSEMBLY_WORKFLOW {
     // plAnnotate
     PLANNOTATE_BATCH(MEDAKA.out.assembly, false)
     
-    // Read length histograms
+    // Read length and coverage histograms
     // Align reads to assembly
     MINIMAP2_ALIGN(ECOLI_FILTER.out.filtered_reads, MEDAKA.out.assembly, true, 'bai', false, false)
 
@@ -93,28 +93,44 @@ workflow PLASMID_ASSEMBLY_WORKFLOW {
 
     PLOT_COVERAGE(MINIMAP2_ALIGN.out.bam, MEDAKA.out.assembly)
 
-    // per base reference data tsv (samtools depth to reference?)
-    // coverage plot -> per base reference out with visualization script
-    // e coli contamination -> subworkflow with samtools view and python script
-
-
     // Collect all outputs you want to include in the TAR
-    // .collect() only filepath
+    // Collect specific outputs for TAR
     cat_fastq_path = CAT_FASTQ.out.reads
         .map { meta, file -> file }
         .collect()
 
-    all_outputs = cat_fastq_path.collect()
+    plot_histogram_path = PLOT_HISTOGRAM.out.histogram
+        .map { meta, file -> file }
+        .collect()
 
-    // Prepare input for TAR module
-    tar_meta = Channel.of([id: params.sample_id])
+    plot_coverage_path = PLOT_COVERAGE.out.histogram
+        .map { meta, file -> file }
+        .collect()
 
-    // Run TAR module
-    TAR(
-        tar_meta.combine(all_outputs),
-        '.gz'  // gz compression of all files
-    )
+    medaka_assembly_path = MEDAKA.out.assembly
+        .map { meta, file -> file }
+        .collect()
+
+    plannotate_html_path = PLANNOTATE_BATCH.out.html
+        .map { meta, file -> file }
+        .collect()
+
+    plannotate_gbk_path = PLANNOTATE_BATCH.out.gbk
+        .map { meta, file -> file }
+        .collect()
+
+    // Combine all collected paths
+    all_paths = cat_fastq_path
+        .mix(plot_histogram_path)
+        .mix(plot_coverage_path)
+        .mix(medaka_assembly_path)
+        .mix(plannotate_html_path)
+        .mix(plannotate_gbk_path)
+        .collect()
+
+    // Run ZIP module
+    ZIP(all_paths, params.sample_id)
 
     emit:
-    archive = TAR.out.archive
+    archive = ZIP.out.archive
 }
