@@ -3,9 +3,7 @@ process RASUSA {
     label 'process_low'
 
     conda "${moduleDir}/environment.yml"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/rasusa:0.3.0--h779adbc_1' :
-        'biocontainers/rasusa:0.3.0--h779adbc_1' }"
+    container "ethanmcq/rasusa"
 
     input:
     tuple val(meta), path(reads), val(genome_size)
@@ -21,14 +19,16 @@ process RASUSA {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def output   = meta.single_end ? "--output ${prefix}.fastq.gz" : "--output ${prefix}_1.fastq.gz ${prefix}_2.fastq.gz"
+    def output   = task.ext.prefix ?: "--output ${prefix}.fastq.gz"
     """
     rasusa \\
+        reads \\
         $args \\
         --coverage $depth_cutoff \\
         --genome-size $genome_size \\
-        --input $reads \\
+        $reads \\
         $output
+        
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         rasusa: \$(rasusa --version 2>&1 | sed -e "s/rasusa //g")

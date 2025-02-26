@@ -9,8 +9,8 @@ process SAMTOOLS_VIEW_KEEP_UNALIGNED {
     tuple val(meta), path(input)
 
     output:
-    tuple val(meta), path("${prefix}.bam"),                                    emit: bam,              optional: true
-    path  "versions.yml",                                                      emit: versions
+    tuple val(meta), path(output), emit: bam, optional: true
+    path  "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when

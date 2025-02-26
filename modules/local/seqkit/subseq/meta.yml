@@ -1,0 +1,46 @@
+name: seqkit_subseq
+description: Extract subsequence from FASTA/Q files
+keywords:
+  - seqkit
+  - subseq
+  - fasta
+  - fastq
+  - sequence
+  - subsequence
+tools:
+  - seqkit:
+      description: "A cross-platform and ultrafast toolkit for FASTA/Q file manipulation"
+      homepage: "https://bioinf.shenwei.me/seqkit/"
+      documentation: "https://bioinf.shenwei.me/seqkit/usage/"
+      tool_dev_url: "https://github.com/shenwei356/seqkit"
+      doi: "10.1371/journal.pone.0163962"
+      licence: ["MIT"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - input:
+      type: file
+      description: FASTA/Q input file
+      pattern: "*.{fasta,fastq,fa,fq,fas,fna,faa}"
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - fastx:
+      type: file
+      description: FASTA/Q file with extracted subsequences
+      pattern: "*.{fasta,fastq,fa,fq,fas,fna,faa}"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@ethan-mcq"

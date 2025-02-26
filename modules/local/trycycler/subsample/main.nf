@@ -3,12 +3,11 @@ process TRYCYCLER_SUBSAMPLE {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/trycycler:0.5.3--pyhdfd78af_0':
-        'biocontainers/trycycler:0.5.3--pyhdfd78af_0' }"
+    container "ethanmcq/trycycler"
 
     input:
     tuple val(meta), path(reads)
+    val(genome_size)
 
     output:
     tuple val(meta), path("*/*.fastq.gz") , emit: subreads
@@ -26,9 +25,11 @@ process TRYCYCLER_SUBSAMPLE {
     trycycler \\
         subsample \\
         $args \\
+        --count 3 \\
         --reads ${reads} \\
         --threads $task.cpus \\
-        --out_dir ${prefix}
+        --out_dir ${prefix} \\
+        --genome_size ${genome_size}
 
     gzip $args2 ${prefix}/*.fastq
 

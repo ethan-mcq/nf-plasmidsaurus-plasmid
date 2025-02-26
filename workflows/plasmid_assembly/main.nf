@@ -1,14 +1,13 @@
 include { CAT_FASTQ } from '../../modules/nf-core/cat/fastq/main'
-include { MINIMAP2_ALIGN } from '../../modules/nf-core/minimap2/align/main'
+include { SEQKIT_SUBSEQ } from '../../modules/local/seqkit/subseq/main'
 include { RASUSA } from '../../modules/nf-core/rasusa/main'
-include { TRYCYCLER_SUBSAMPLE } from '../../modules/nf-core/trycycler/subsample/main'
-include { FLYE } from '../../modules/nf-core/flye/main'
+include { TRYCYCLER_SUBSAMPLE } from '../../modules/local/trycycler/subsample/main'
+include { FLYE } from '../../modules/local/flye/main'
 include { MEDAKA } from '../../modules/nf-core/medaka/main'
-include { TAR } from '../../modules/nf-core/tar/main'
 //plannotate
 include { LAST_DOTPLOT } from '../../modules/nf-core/last/dotplot/main'
 //other stuff here
-
+include { TAR } from '../../modules/nf-core/tar/main'
 
 // Import subworkflows
 include { ECOLI_FILTER } from '../../subworkflows/ecoli_filter'
@@ -33,15 +32,36 @@ workflow PLASMID_ASSEMBLY_WORKFLOW {
             return [["id": sample_id, "single_end": true], files.flatten()]
         }
 
-    // cat fastq files
+    // Cat fastq files
     CAT_FASTQ(fastq_files)
 
-    // filter out ecoli sequences with minimap2
+    // Filter out ecoli sequences with minimap2
     ECOLI_FILTER(CAT_FASTQ.out.reads, params.ecoli_ref)
 
-    // subsample with rasusa
+    // Trim read ends by 100
+    SEQKIT_SUBSEQ(ECOLI_FILTER.out.filtered_reads)
+    
+    // Subsample with rasusa
+    rasusa_input = SEQKIT_SUBSEQ.out.fastx.map { meta, reads ->
+        [meta, reads, params.genome_size]
+    }
+
+    RASUSA(rasusa_input, params.downsample_target_depth)
+
     // trycycler subsample
+    TRYCYCLER_SUBSAMPLE(RASUSA.out.reads, params.genome_size)
+
     // flye assembly
+    // Prepare input for FLYE
+    flye_input = TRYCYCLER_SUBSAMPLE.out.subreads
+        .transpose()
+        .map { meta, reads -> 
+            def new_meta = meta + [id: "${meta.id}_${reads.baseName}"]
+            [new_meta, reads]
+        }
+        
+    FLYE(flye_input, params.read_quality)
+
     // trycycler and medaka polish
     // plannotate
     // last dotplot
