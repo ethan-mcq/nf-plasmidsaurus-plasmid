@@ -1,5 +1,7 @@
 assets/test-data-plasmid/
+assets/references/
 work/
+work_output/
 .DS_Store
 .nextflow.log*
 .nextflow

@@ -4,9 +4,7 @@ process MINIMAP2_ALIGN {
 
     // Note: the versions here need to match the versions used in the mulled container below and minimap2/index
     conda "${moduleDir}/environment.yml"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/mulled-v2-66534bcbb7031a148b13e2ad42583020b9cd25c4:3161f532a5ea6f1dec9be5667c9efc2afdac6104-0' :
-        'biocontainers/mulled-v2-66534bcbb7031a148b13e2ad42583020b9cd25c4:3161f532a5ea6f1dec9be5667c9efc2afdac6104-0' }"
+    container "ethanmcq/minimap2"
 
     input:
     tuple val(meta), path(reads)
@@ -36,14 +34,17 @@ process MINIMAP2_ALIGN {
     def cigar_paf = cigar_paf_format && !bam_format ? "-c" : ''
     def set_cigar_bam = cigar_bam && bam_format ? "-L" : ''
     def bam_input = "${reads.extension}".matches('sam|bam|cram')
-    def samtools_reset_fastq = bam_input ? "samtools reset --threads ${task.cpus-1} $args3 $reads | samtools fastq --threads ${task.cpus-1} $args4 |" : ''
+    def samtools_reset_fastq = bam_input ? "samtools fastq --threads ${task.cpus-1} -T \"*\" $reads |" : '' // this is edited from the original nf-core module
     def query = bam_input ? "-" : reads
     def target = reference ?: (bam_input ? error("BAM input requires reference") : reads)
-
+    
+    // -y and -x map-ont are used to ensure MM and ML tags are carried over to BAM
     """
     $samtools_reset_fastq \\
     minimap2 \\
         $args \\
+        -y \\
+        -x map-ont \\
         -t $task.cpus \\
         $target \\
         $query \\
