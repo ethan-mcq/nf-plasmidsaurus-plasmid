@@ -33,7 +33,43 @@ sample_id/
 ├── sample_id.read_coverage.png - Consensus sequence plasmid coverage from sequence file.
 ├── sample_id.read_length.png - Shows read length and counts of unaligned, plasmid aligned, and contaminant aligned reads. 
 ```
+![Outputs](assets/readme_assets/outputs.png)
+This is an example of a successfully executed pipeline:
+```
+(base) MacBook-Pro-9:nf-plasmidsaurus-plasmid ethanmcquhae$ nextflow run main.nf --input_dir ~/Desktop/nf-plasmidsaurus-plasmid/assets/test-data-plasmid/ --output_dir ~/Desktop/nf-plasmidsaurus-plasmid/work_output/ --sample_id sample_id --genome_size 7200 -profile docker
 
+ N E X T F L O W   ~  version 24.10.4
+
+Launching `main.nf` [determined_mcclintock] DSL2 - revision: f4d89da379
+
+executor >  local (24)
+[00/52258e] process > PLASMID_ASSEMBLY_WORKFLOW:CAT_FASTQ (sample_id)                                 [100%] 1 of 1 ✔
+[58/c7b3d7] process > PLASMID_ASSEMBLY_WORKFLOW:ECOLI_FILTER:MINIMAP2_ALIGN (sample_id)               [100%] 1 of 1 ✔
+[8d/8dfbf9] process > PLASMID_ASSEMBLY_WORKFLOW:ECOLI_FILTER:SAMTOOLS_VIEW_KEEP_UNALIGNED (sample_id) [100%] 1 of 1 ✔
+[6c/892a6f] process > PLASMID_ASSEMBLY_WORKFLOW:ECOLI_FILTER:SAMTOOLS_VIEW_KEEP_ALIGNED (sample_id)   [100%] 1 of 1 ✔
+[7c/16fd09] process > PLASMID_ASSEMBLY_WORKFLOW:ECOLI_FILTER:SAMTOOLS_BAM2FQ (sample_id)              [100%] 1 of 1 ✔
+[5a/71ef2d] process > PLASMID_ASSEMBLY_WORKFLOW:ECOLI_FILTER:GUNZIP (sample_id_interleaved.fq.gz)     [100%] 1 of 1 ✔
+[35/013138] process > PLASMID_ASSEMBLY_WORKFLOW:SEQKIT_SUBSEQ (sample_id)                             [100%] 1 of 1 ✔
+[3b/c44162] process > PLASMID_ASSEMBLY_WORKFLOW:RASUSA (sample_id)                                    [100%] 1 of 1 ✔
+[5d/7cb6b5] process > PLASMID_ASSEMBLY_WORKFLOW:TRYCYCLER_SUBSAMPLE (sample_id)                       [100%] 1 of 1 ✔
+[51/79b552] process > PLASMID_ASSEMBLY_WORKFLOW:FLYE (sample_id_sample_01.fastq)                      [100%] 3 of 3 ✔
+[22/d563dd] process > PLASMID_ASSEMBLY_WORKFLOW:TRYCYCLER_COMPLETE:DECONCATENATE (sample_id)          [100%] 1 of 1 ✔
+[36/907f7c] process > PLASMID_ASSEMBLY_WORKFLOW:TRYCYCLER_COMPLETE:TRYCYCLER_CLUSTER (sample_id)      [100%] 1 of 1 ✔
+[c7/a16d77] process > PLASMID_ASSEMBLY_WORKFLOW:TRYCYCLER_COMPLETE:TRYCYCLER_RECONCILE (sample_id)    [100%] 1 of 1 ✔
+[bb/35bd26] process > PLASMID_ASSEMBLY_WORKFLOW:TRYCYCLER_COMPLETE:TRYCYCLER_MSA (sample_id)          [100%] 1 of 1 ✔
+[31/0915ab] process > PLASMID_ASSEMBLY_WORKFLOW:TRYCYCLER_COMPLETE:TRYCYCLER_PARTITION (sample_id)    [100%] 1 of 1 ✔
+[88/c33aeb] process > PLASMID_ASSEMBLY_WORKFLOW:TRYCYCLER_COMPLETE:TRYCYCLER_CONSENSUS (sample_id)    [100%] 1 of 1 ✔
+[31/0896fb] process > PLASMID_ASSEMBLY_WORKFLOW:MEDAKA (sample_id)                                    [100%] 1 of 1 ✔
+[76/3b836b] process > PLASMID_ASSEMBLY_WORKFLOW:PLANNOTATE_BATCH (sample_id)                          [100%] 1 of 1 ✔
+[95/c3008b] process > PLASMID_ASSEMBLY_WORKFLOW:MINIMAP2_ALIGN (sample_id)                            [100%] 1 of 1 ✔
+[17/31c773] process > PLASMID_ASSEMBLY_WORKFLOW:PLOT_HISTOGRAM (sample_id)                            [100%] 1 of 1 ✔
+[21/5e7118] process > PLASMID_ASSEMBLY_WORKFLOW:PLOT_COVERAGE (sample_id)                             [100%] 1 of 1 ✔
+[8c/88516a] process > PLASMID_ASSEMBLY_WORKFLOW:ZIP (sample_id)                                       [100%] 1 of 1 ✔
+Completed at: 26-Feb-2025 13:26:19
+Duration    : 1m 36s
+CPU hours   : (a few seconds)
+Succeeded   : 24
+```
 ## Overview of the Pipeline
 The folder structure is intentional:
 
