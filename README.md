@@ -24,7 +24,7 @@ These are all required input parameters for the pipeline to run, except for the 
 
 Docker and Nextflow installation how-tos can be found in `documentation/`
 
-**CAVEAT:** Again, in the interest of time, I have not built in error catching for `FLYE` or `TRYCYCLER RECONCILE`. If the command exits with the test data, simply rerun the code as it is likely an error from contig creation by Trycycler. <3
+**CAVEAT:** Again, in the interest of time, I have not built in error catching for `FLYE` or `TRYCYCLER RECONCILE`. If the command exits with the test data, simply rerun the code as it is likely an error from contig creation by Trycycler. Give it 2-3 tries. <3
 
 ## Outputs
 The output of the pipeline will be a tar.gz file with all of the contents from the pipeline.
