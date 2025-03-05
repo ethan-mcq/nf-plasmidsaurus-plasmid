@@ -1,4 +1,4 @@
-# nf-plasmidsaurus-plasmid
+# nf-plasmid
 ## Introduction
 I appreciate Rishud Handa and his team at Plasmidsaurus for looking at my work. I live and breathe Nanopore sequencing and love bioinformatics. Please feel free to ask me any questions about this workflow, my experience, or otherwise through [Linkedin](https://www.linkedin.com/in/ethanmcquhae/) or [email](mailto:ethan.mcq01@gmail.com). Enjoy!
 
